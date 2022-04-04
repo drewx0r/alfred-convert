@@ -10,9 +10,9 @@
 
 """Script to update exchange rates in the background."""
 
-from __future__ import print_function
 
-from itertools import izip_longest
+
+from itertools import zip_longest
 from multiprocessing.dummy import Pool
 import os
 import time
@@ -54,7 +54,7 @@ def grouper(n, iterable):
     sentinel = object()
     args = [iter(iterable)] * n
     groups = []
-    for l in izip_longest(*args, fillvalue=sentinel):
+    for l in zip_longest(*args, fillvalue=sentinel):
         groups.append([v for v in l if v is not sentinel])
     return groups
 
@@ -77,7 +77,7 @@ def load_cryptocurrency_rates(symbols):
     r.raise_for_status()
 
     data = r.json()
-    for sym, rate in data.items():
+    for sym, rate in list(data.items()):
         log.debug('[CryptoCompare.com] 1 %s = %s %s',
                   REFERENCE_CURRENCY, rate, sym)
 
@@ -99,7 +99,7 @@ def load_xra_rates(symbols):
     log.debug('[%s] %s', r.status_code, url)
     data = r.json()
 
-    for sym, rate in data['rates'].items():
+    for sym, rate in list(data['rates'].items()):
         if sym not in wanted:
             continue
         log.debug('[ExchangeRate-API.com] 1 %s = %s %s',
@@ -137,7 +137,7 @@ def load_openx_rates(symbols):
     log.debug('[%s] %s', r.status_code, OPENX_API_URL.format('XXX'))
     data = r.json()
 
-    for sym, rate in data['rates'].items():
+    for sym, rate in list(data['rates'].items()):
         if sym not in wanted:
             continue
         log.debug('[OpenExchangeRates.org] 1 %s = %s %s',
@@ -185,7 +185,7 @@ def fetch_exchange_rates():
     futures = []
     active = load_active_currencies()
 
-    syms = [s for s in CURRENCIES.keys() if s in active]
+    syms = [s for s in list(CURRENCIES.keys()) if s in active]
     if not OPENX_APP_KEY:
         log.warning(
             'fetching limited set of fiat currency exchange rates: '
@@ -198,7 +198,7 @@ def fetch_exchange_rates():
         jobs = [(load_openx_rates, (syms,))]
 
     syms = []
-    for s in CRYPTO_CURRENCIES.keys():
+    for s in list(CRYPTO_CURRENCIES.keys()):
         if s in CURRENCIES:
             log.warning('ignoring crytopcurrency "%s", as it conflicts with '
                         'a fiat currency', s)

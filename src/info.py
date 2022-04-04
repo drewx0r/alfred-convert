@@ -31,7 +31,7 @@ Options:
 
 """
 
-from __future__ import absolute_import
+
 
 from datetime import timedelta
 import subprocess
@@ -66,7 +66,7 @@ SIGNUP_URL = 'https://openexchangerates.org/signup/free'
 
 log = None
 
-DELIMITER = u'\u203a'  # SINGLE RIGHT-POINTING ANGLE QUOTATION MARK
+DELIMITER = '\u203a'  # SINGLE RIGHT-POINTING ANGLE QUOTATION MARK
 
 
 def human_timedelta(td):
@@ -128,9 +128,9 @@ def handle_delimited_query(query):
     if mode == 'currencies':
 
         currencies = sorted([(name, symbol) for (symbol, name)
-                            in CURRENCIES.items()] +
+                            in list(CURRENCIES.items())] +
                             [(name, symbol) for (symbol, name)
-                            in CRYPTO_CURRENCIES.items()])
+                            in list(CRYPTO_CURRENCIES.items())])
 
         if query:
             currencies = wf.filter(query, currencies,
@@ -152,8 +152,8 @@ def handle_delimited_query(query):
                         icon=ICON_WARNING)
 
         for name, symbol in currencies:
-            wf.add_item(u'{} // {}'.format(name, symbol),
-                        u'Use `{}` in conversions'.format(symbol),
+            wf.add_item('{} // {}'.format(name, symbol),
+                        'Use `{}` in conversions'.format(symbol),
                         copytext=symbol,
                         valid=False,
                         icon=ICON_CURRENCY)
@@ -214,7 +214,7 @@ def main(wf):
 
         dict(title='View All Supported Currencies',
              subtitle='View and search list of supported currencies',
-             autocomplete=u'currencies {} '.format(DELIMITER),
+             autocomplete='currencies {} '.format(DELIMITER),
              icon=ICON_CURRENCY),
 
         dict(title='Edit Active Currencies',

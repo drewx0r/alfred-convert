@@ -10,7 +10,7 @@
 
 """Drives Script Filter to show unit conversions in Alfred 3."""
 
-from __future__ import print_function
+
 
 import os
 import sys
@@ -138,7 +138,7 @@ class Input(object):
     @property
     def is_currency(self):
         """`True` if Input is a currency."""
-        return self.dimensionality == u'[currency]'
+        return self.dimensionality == '[currency]'
 
     def __repr__(self):
         """Code-like representation of `Input`."""
@@ -217,11 +217,11 @@ class Formatter(object):
 
     def formatted(self, n, unit=None):
         """Format number with thousands and decimal separators."""
-        sep = u''
+        sep = ''
         if self.thousands_separator:
-            sep = u','
+            sep = ','
 
-        fmt = u'{{:0{}.{:d}f}}'.format(sep, self._decimal_places(n))
+        fmt = '{{:0{}.{:d}f}}'.format(sep, self._decimal_places(n))
         num = fmt.format(n)
         # log.debug('n=%r, fmt=%r, num=%r', n, fmt, num)
         num = num.replace(',', '||comma||')
@@ -230,20 +230,20 @@ class Formatter(object):
         num = num.replace('||point||', self.decimal_separator)
 
         if unit:
-            num = u'{} {}'.format(num, unit)
+            num = '{} {}'.format(num, unit)
 
         return num
 
     def formatted_no_thousands(self, n, unit=None):
         """Format number with decimal separator only."""
-        fmt = u'{{:0.{:d}f}}'.format(self._decimal_places(n))
+        fmt = '{{:0.{:d}f}}'.format(self._decimal_places(n))
         num = fmt.format(n)
         # log.debug('n=%r, fmt=%r, num=%r', n, fmt, num)
         num = num.replace('.', '||point||')
         num = num.replace('||point||', self.decimal_separator)
 
         if unit:
-            num = u'{} {}'.format(num, unit)
+            num = '{} {}'.format(num, unit)
 
         return num
 
@@ -271,7 +271,7 @@ class Conversion(object):
 
     def __str__(self):
         """Pretty string representation."""
-        return u'{:f} {} = {:f} {} {}'.format(
+        return '{:f} {} = {:f} {} {}'.format(
             self.from_number, self.from_unit, self.to_number, self.to_unit,
             self.dimensionality).encode('utf-8')
 
@@ -386,9 +386,9 @@ class Converter(object):
         # Create `Input` from parsed query
         tu = None
         if to_unit:
-            tu = unicode(to_unit.units)
-        i = Input(from_unit.magnitude, unicode(from_unit.dimensionality),
-                  unicode(from_unit.units), tu, ctx)
+            tu = str(to_unit.units)
+        i = Input(from_unit.magnitude, str(from_unit.dimensionality),
+                  str(from_unit.units), tu, ctx)
 
         log.debug('[parser] %s', i)
 
@@ -528,7 +528,7 @@ def register_exchange_rates(exchange_rates):
     # defined relative to the US dollar
     ureg.define('USD = [currency] = usd')
 
-    for abbr, rate in exchange_rates.items():
+    for abbr, rate in list(exchange_rates.items()):
         definition = '{} = usd / {}'.format(abbr, rate)
 
         try:
@@ -559,26 +559,26 @@ def convert(query):
     try:
         i = c.parse(query)
     except ValueError as err:
-        log.critical(u'invalid query (%s): %s', query, err)
-        error = err.message
+        log.critical('invalid query (%s): %s', query, err)
+        error = str(err)
 
     else:
         try:
             results = c.convert(i)
             # log.debug('results=%r', results)
         except NoToUnits:
-            log.critical(u'No to_units (or defaults) for %s', i.dimensionality)
-            error = u'No destination units (or defaults) for {}'.format(
+            log.critical('No to_units (or defaults) for %s', i.dimensionality)
+            error = 'No destination units (or defaults) for {}'.format(
                 i.dimensionality)
 
         except DimensionalityError as err:
-            log.critical(u'invalid conversion (%s): %s', query, err)
-            error = u"Can't convert from {} {} to {} {}".format(
+            log.critical('invalid conversion (%s): %s', query, err)
+            error = "Can't convert from {} {} to {} {}".format(
                 err.units1, err.dim1, err.units2, err.dim2)
 
         except KeyError as err:
-            log.critical(u'invalid context (%s): %s', i.context, err)
-            error = u'Unknown context: {}'.format(i.context)
+            log.critical('invalid context (%s): %s', i.context, err)
+            error = 'Unknown context: {}'.format(i.context)
 
     if not error and not results:
         error = 'Conversion input not understood'
@@ -615,7 +615,7 @@ def convert(query):
 
             mod = it.add_modifier(
                 'cmd',
-                u'{} {} as default unit for {}'.format(
+                '{} {} as default unit for {}'.format(
                     name, conv.to_unit, conv.dimensionality))
             mod.setvar('action', action)
             mod.setvar('unit', conv.to_unit)
@@ -674,11 +674,11 @@ def main(wf):
     if is_running('update'):
         wf.rerun = 0.5
         if exchange_rates is None:  # No data cached yet
-            wf.add_item(u'Fetching exchange rates…',
+            wf.add_item('Fetching exchange rates…',
                         'Currency conversions will be momentarily possible',
                         icon=ICON_INFO)
         else:
-            wf.add_item(u'Updating exchange rates…',
+            wf.add_item('Updating exchange rates…',
                         icon=ICON_INFO)
 
     return convert(query)

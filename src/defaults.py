@@ -22,7 +22,7 @@ Options:
 
 """
 
-from __future__ import print_function, absolute_import
+
 
 from collections import defaultdict
 
@@ -120,12 +120,12 @@ def main(wf):
 
     if args['save']:
         defs.add(dimensionality, unit)
-        print(u'Saved {} as default unit for {}'.format(unit, dimensionality))
+        print('Saved {} as default unit for {}'.format(unit, dimensionality))
         return
 
     if args['delete']:
         defs.remove(dimensionality, unit)
-        print(u'Removed {} as default unit for {}'.format(unit, dimensionality))
+        print('Removed {} as default unit for {}'.format(unit, dimensionality))
         return
 
 

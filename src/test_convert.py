@@ -10,7 +10,7 @@
 
 """Test converter."""
 
-from __future__ import print_function, absolute_import
+
 
 from collections import namedtuple
 import logging
@@ -67,7 +67,7 @@ def test_valid():
         ('1.3 km', T(1.3, '[length]', 'kilometer', None)),
         ('1.3 km miles', T(1.3, '[length]', 'kilometer', 'mile')),
         ('5 m/s kph', T(5.0, '[length] / [time]', 'meter/second', 'kph')),
-        ('21.3 m^2 acres', T(21.3, '[length] ** 2', u'meter²', 'acre')),
+        ('21.3 m^2 acres', T(21.3, '[length] ** 2', 'meter²', 'acre')),
     ]
     c = convert.Converter(None)
     for t in data:
